@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Kuis Forum Anak</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #fce4ec; /* Soft pink */
+      }
+      .card {
+        background-color: #fff0f3; /* Light pink */
+      }
+      button {
+        transition: all 0.3s ease-in-out;
+      }
+      button:hover {
+        transform: scale(1.05);
+        background-color: #ffc1e3;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="flex justify-center items-center min-h-screen">
+      <!-- Start Screen -->
+      <div
+        id="start-screen"
+        class="w-80 card rounded-3xl shadow-lg p-4 mx-2 text-center"
+      >
+        <h1 class="text-2xl font-bold mb-4">
+          Selamat Datang di Kuis Forum Anak
+        </h1>
+        <button
+          onclick="startQuiz()"
+          class="w-full py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600"
+        >
+          Mulai
+        </button>
+      </div>
+
+      <!-- Quiz Screen -->
+      <div
+        id="quiz-screen"
+        class="w-80 card rounded-3xl shadow-lg p-4 mx-2 hidden"
+      >
+        <div class="flex items-center justify-between">
+          <i
+            class="fas fa-home text-gray-500 cursor-pointer"
+            onclick="window.location.href='PIFA.html'"
+          ></i>
+          <p id="question-number" class="text-sm font-semibold">
+            Pertanyaan 1/10
+          </p>
+          <i
+            class="fas fa-lightbulb text-yellow-500 cursor-pointer"
+            onclick="showHint()"
+          ></i>
+        </div>
+        <div class="mt-4">
+          <p id="question-text" class="text-sm font-semibold text-center"></p>
+          <div class="w-full bg-pink-200 rounded-full h-2 mt-2">
+            <div
+              id="progress-bar"
+              class="bg-pink-500 h-2 rounded-full"
+              style="width: 10%"
+            ></div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <div class="flex flex-col space-y-2" id="answer-buttons"></div>
+        </div>
+        <div class="flex justify-around mt-4">
+          <button
+            onclick="skipQuestion()"
+            class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center"
+          >
+            <i class="fas fa-forward text-pink-500"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Score Screen -->
+      <div
+        id="score-screen"
+        class="w-80 card rounded-3xl shadow-lg p-4 mx-2 hidden"
+      >
+        <div class="mt-4 text-center">
+          <p class="text-sm font-semibold">
+            Selamat, kamu telah menyelesaikan kuis ini, lihat skor kamu!
+          </p>
+          <p id="final-score" class="text-lg font-bold text-pink-500"></p>
+        </div>
+        <div class="mt-4">
+          <button
+            onclick="restartQuiz()"
+            class="w-full py-2 bg-pink-500 text-white rounded-lg"
+          >
+            Coba Lagi
+          </button>
+          <button
+            onclick="window.location.href='PIFA.html'"
+            class="w-full py-2 bg-gray-300 text-black rounded-lg mt-2"
+          >
+            Beranda
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentQuestion = 0;
+      let score = 0;
+      const questions = [
+        {
+          question: "Undang Undang yang mengatur tentang perlindungan anak?",
+          options: [
+            "UU PA No 23 Tahun 2020",
+            "UU PA No 23 Tahun 2002",
+            "UU PA No 23 Tahun 2021",
+            "UU PA No 23 Tahun 2014",
+          ],
+          answer: "B",
+          hint: "Disahkan pertama kali pada tahun 2002.",
+        },
+        {
+          question: "Apa kepanjangan dari DKBP3A?",
+          options: [
+            "Dinas Keluarga Berencana Pemberdayaan Pemerintah dan Perlindungan Anak",
+            "Dinas Keluarga Berencana Pemberdayaan Permasyarakatan Perlindungan Anak",
+            "Dinas Keluarga Berencana Pemberdayaan Perempuan dan Perlindungan Anak",
+            "Dinas Keluarga Berencana Pemberdayaan Perempuan Pemenuhan Anak",
+          ],
+          answer: "C",
+          hint: "Berfokus pada pemberdayaan perempuan.",
+        },
+        {
+          question:
+            "Peraturan yang mengatur tentang Forum Anak tertuang dalam?",
+          options: [
+            "Permen PPPA No 1 Tahun 2022",
+            "Permen PPPA No 1 Tahun 2021",
+            "Permen PPPA No 12 Tahun 2022",
+            "Permen PPPA No 1 Tahun 2020",
+          ],
+          answer: "A",
+          hint: "Diterbitkan pada tahun 2022.",
+        },
+        {
+          question: "Hari Anak di Indonesia diperingati setiap tanggal?",
+          options: ["23 Juni", "23 Juli", "20 November", "2 September"],
+          answer: "B",
+          hint: "Bulan ketujuh dalam tahun.",
+        },
+        {
+          question:
+            "Organisasi anak yang menjembatani komunikasi antara pemerintah dan anak disebut?",
+          options: [
+            "Kelompok Anak",
+            "Komunitas Anak",
+            "Forum Anak",
+            "Konvensi Hak Anak",
+          ],
+          answer: "C",
+          hint: "Memiliki kata 'Forum' dalam namanya.",
+        },
+        {
+          question: "Apa kepanjangan dari PPPA?",
+          options: [
+            "Perlindungan Perempuan dan Pemenuhan Anak",
+            "Pemberdayaan Perempuan dan Perlindungan Anak",
+            "Pendidikan Perempuan dan Pemenuhan Anak",
+            "Pengasuhan Perempuan dan Pemenuhan Anak",
+          ],
+          answer: "B",
+          hint: "Berfokus pada perempuan dan anak.",
+        },
+        {
+          question: "Hak Anak yang diatur dalam Konvensi PBB terdiri dari?",
+          options: ["4 Hak", "3 Hak", "5 Hak", "6 Hak"],
+          answer: "A",
+          hint: "Angkanya kecil dan genap.",
+        },
+        {
+          question:
+            "Apa nama deklarasi yang melahirkan Forum Anak pertama kali?",
+          options: [
+            "Deklarasi Dunia Layak Anak",
+            "Deklarasi Pemuda untuk Anak",
+            "Deklarasi Anak Indonesia",
+            "Deklarasi Sejahtera Anak",
+          ],
+          answer: "A",
+          hint: "Mengandung kata 'Dunia Layak'.",
+        },
+        {
+          question: "Berapa usia anak yang diakui sebagai anak menurut UU?",
+          options: ["0-18 tahun", "0-17 tahun", "0-16 tahun", "0-19 tahun"],
+          answer: "A",
+          hint: "Hingga sebelum usia 19.",
+        },
+        {
+          question: "Apa tujuan utama Forum Anak?",
+          options: [
+            "Partisipasi Anak dalam Pembangunan",
+            "Pengawasan Anak oleh Pemerintah",
+            "Perlindungan Khusus Anak",
+            "Pelatihan Anak oleh Pemerintah",
+          ],
+          answer: "A",
+          hint: "Berhubungan dengan 'partisipasi'.",
+        },
+      ];
+
+      function startQuiz() {
+        document.getElementById("start-screen").classList.add("hidden");
+        document.getElementById("quiz-screen").classList.remove("hidden");
+        loadQuestion();
+      }
+
+      function loadQuestion() {
+        const question = questions[currentQuestion];
+        document.getElementById("question-number").textContent = `Pertanyaan ${
+          currentQuestion + 1
+        }/10`;
+        document.getElementById("question-text").textContent =
+          question.question;
+        document.getElementById("progress-bar").style.width = `${
+          ((currentQuestion + 1) / questions.length) * 100
+        }%`;
+        const answers = document.getElementById("answer-buttons");
+        answers.innerHTML = "";
+        question.options.forEach((option, index) => {
+          const btn = document.createElement("button");
+          btn.textContent = option;
+          btn.className =
+            "w-full py-2 bg-pink-100 text-black rounded-lg hover:bg-pink-200";
+          btn.onclick = () => checkAnswer(index);
+          answers.appendChild(btn);
+        });
+      }
+
+      function checkAnswer(selected) {
+        const question = questions[currentQuestion];
+        const correctIndex = "ABCD".indexOf(question.answer);
+        if (selected === correctIndex) score++;
+
+        currentQuestion++;
+        currentQuestion < questions.length ? loadQuestion() : endQuiz();
+      }
+
+      function endQuiz() {
+        document.getElementById("quiz-screen").classList.add("hidden");
+        document.getElementById("score-screen").classList.remove("hidden");
+        document.getElementById("final-score").textContent = `${Math.round(
+          (score / questions.length) * 100
+        )}`;
+      }
+
+      function restartQuiz() {
+        currentQuestion = 0;
+        score = 0;
+        document.getElementById("score-screen").classList.add("hidden");
+        document.getElementById("start-screen").classList.remove("hidden");
+      }
+
+      function showHint() {
+        alert(`Hint: ${questions[currentQuestion].hint}`);
+      }
+
+      function skipQuestion() {
+        currentQuestion++;
+        currentQuestion < questions.length ? loadQuestion() : endQuiz();
+      }
+    </script>
+  </body>
+</html>
